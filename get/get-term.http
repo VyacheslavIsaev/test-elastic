@@ -1,0 +1,10 @@
+GET http://{{$ELASTIC}}/twitter-index/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "term" : {
+            "text": "test"
+        }
+    }
+}

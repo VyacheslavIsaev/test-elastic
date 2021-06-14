@@ -1,0 +1,1 @@
+GET http://{{$ELASTIC}}/twitter-index/_sezrch?q=text:test

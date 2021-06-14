@@ -1,0 +1,9 @@
+PUT http://10.131.138.169:9200/twitter-index/_doc/1
+content-type: application/json; charset=UTF-8
+
+{
+    "userid":"1",
+    "id":"1",
+    "createdAt":"2020-01-01T23:00:50+0000",
+    "msg": "test multi word"
+}

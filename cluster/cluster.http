@@ -1,0 +1,14 @@
+GET http://{{$dotenv ELASTIC}}/_cluster/health
+
+
+###
+GET http://{{$dotenv ELASTIC}}/_cat/nodes?v
+
+
+###
+GET http://{{$dotenv ELASTIC}}/_nodes
+
+
+###
+GET http://{{$dotenv ELASTIC}}/_cat/indices
+

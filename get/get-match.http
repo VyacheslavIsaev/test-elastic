@@ -1,0 +1,10 @@
+GET http://{{$ELASTIC}}/twitter-index/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match" : {
+            "text": "test multi word"
+        }
+    }
+}

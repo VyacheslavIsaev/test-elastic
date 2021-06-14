@@ -1,0 +1,34 @@
+PUT http://10.131.138.169:9200/twitter-index
+content-type: application/json; charset=UTF-8
+
+{
+    "mappings":{
+        "properties":{
+            "userid":{ 
+                "type":"long"
+            },
+            "id":{ 
+                "type":"text",
+                "fields":{
+                    "keyword":{
+                        "type":"keyword",
+                        "ignore_above":256
+                    }
+                }
+            },
+            "createdAt":{
+                "type": "date",
+                "format": "yyyy-MM-dd'T'HH:mm:ssZZ"
+            },
+            "msg":{
+                "type":"text",
+                "fields":{
+                    "keyword":{
+                        "type": "keyword",
+                        "ignore_above": 256
+                    }
+                }
+            }
+        }
+    }
+}

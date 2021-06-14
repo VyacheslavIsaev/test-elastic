@@ -1,0 +1,8 @@
+GET http://{{$processEnv ELASTIC}}/.kibana/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all":{}
+    }
+}

@@ -1,0 +1,1 @@
+GET http://{{$ELASTIC}}/twitter-index/_search?size=2000
