@@ -1,3 +1,8 @@
+###
+#   https://nil.udemy.com/course/elasticsearch-complete-guide/learn/lecture/16287978#overview
+###
+
+###
 GET http://{{$dotenv ELASTIC}}/_cluster/health
 
 

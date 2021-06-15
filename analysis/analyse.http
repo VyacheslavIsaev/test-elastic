@@ -1,0 +1,21 @@
+POST http://{{$processEnv ELASTIC}}/_analyze
+Content-Type: application/json
+
+{
+    "text": "2 guys walk into    a bar, but the third... DUCKS! :-)",
+    "analyzer":"standard"
+}
+
+#
+# Definig filter
+#
+###
+POST http://{{$processEnv ELASTIC}}/_analyze
+Content-Type: application/json
+
+{
+    "text": "2 guys walk into    a bar, but the third... DUCKS! :-)",
+    "char_filter": [],
+    "tokenizer": "standard",
+    "filter": ["lowercase"]
+}

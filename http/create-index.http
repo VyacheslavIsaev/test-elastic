@@ -1,0 +1,17 @@
+###
+### Creating pages index
+###
+###
+PUT http://{{$dotenv ELASTIC}}/pages
+
+###
+GET http://{{$dotenv ELASTIC}}/_cluster/healt
+
+###
+GET http://{{$dotenv ELASTIC}}/_cat/indices?v
+
+###
+GET http://{{$dotenv ELASTIC}}/_cat/shards?v
+
+###
+DELETE http://{{$dotenv ELASTIC}}/pages

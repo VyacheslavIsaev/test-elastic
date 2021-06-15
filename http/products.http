@@ -1,0 +1,265 @@
+#
+# https://nil.udemy.com/course/elasticsearch-complete-guide/learn/lecture/16288106#overview
+#
+###
+PUT http://{{$dotenv ELASTIC}}/products
+Content-Type: application/json
+
+{
+    "settings":{
+        "number_of_shards": 2,
+        "number_of_replicas": 2
+    }
+}
+
+#
+# Delete topic
+#
+###
+DELETE http://{{$dotenv ELASTIC}}/products
+
+#
+# https://nil.udemy.com/course/elasticsearch-complete-guide/learn/lecture/16288110#overview
+#
+# action.auto_create_index
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_doc
+Content-Type: application/json
+
+{
+    "name": "Coffee Maker",
+    "price": 64,
+    "in_stock": 10
+}
+
+#
+# With specific id
+# PUT - create, replace document
+# action.auto_create_index
+#
+###
+PUT http://{{$dotenv ELASTIC}}/products/_doc/100
+Content-Type: application/json
+
+{
+    "name": "Toaster",
+    "price": 49,
+    "in_stock": 4
+}
+
+#
+# Getting document
+# 
+###
+GET http://{{$dotenv ELASTIC}}/products/_doc/100
+
+
+#
+# Updating document
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "doc":{
+        "in_stock": 3
+    }
+}
+
+#
+# Adding field
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "doc":{
+        "tags": ["electronics"]
+    }
+}
+
+#
+# Scripting update
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "script": {
+        "source": "ctx._source.in_stock--"
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_doc/100
+
+#
+# Scripting update
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "script": {
+        "source": "ctx._source.in_stock=10"
+    }
+}
+
+
+#
+# Scripting update
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "script": {
+        "params":{
+            "quantity": 4
+        },
+        "source": "ctx._source.in_stock -= params.quantity"
+    }
+}
+
+#
+# Conditionla Scripting update
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100
+Content-Type: application/json
+
+{
+    "script": {
+        "params":{
+            "quantity": 4
+        },
+        "source": """
+            if (ctx._source.in_stock < params.quantity){
+                ctx.op = 'noop';
+            }
+            ctx._source.in_stock -= params.quantity;
+        """
+    }
+}
+
+#
+# Upserting
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/101
+Content-Type: application/json
+
+{
+    "script": {
+        "source": "ctx._source.in_stock++;"
+    },
+    "upsert":{
+        "name": "Blender",
+        "price": 399,
+        "in_stock": 5
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_doc/101
+
+#
+# Deleting document
+#
+###
+DELETE http://{{$dotenv ELASTIC}}/products/_doc/101
+
+#
+# Concurrency control with _primary_term & _seq_no
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update/100?if_primary_term=1&if_seq_no=9
+Content-Type: application/json
+
+{
+    "doc" : {
+        "in_stock": 123
+    }
+}
+
+#
+# Updating multiple documents
+#   with error handling through snapshotting
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_update_by_query
+Content-Type: application/json
+
+{
+    "script": {
+        "source": "ctx_source.in_stock--"
+    },
+    "query": {
+        "match_all": {}
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "match_all": {}
+    }
+}
+
+#
+# Deleting multiple documents
+#   with error handling
+#
+###
+POST http://{{$dotenv ELASTIC}}/products/_delete_by_query
+Content-Type: application/json
+
+{
+    "query": {
+        "match_all": {}
+    }
+}
+
+#
+# Bulk update
+#   index, create, update, delete
+#
+#   https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html
+#
+###
+POST http://{{$dotenv ELASTIC}}/_bulk
+Content-Type: application/x-ndjson
+
+{ "index" : { "_index":"products", "_id": 200} }
+{ "name": "Espresso Maker", "price": 199, "in_stock": 5}
+{ "create": { "_index":"products", "_id":201 } }
+{ "name": "Milk Frother", "price": 149, "in_stock": 14}
+
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "match_all": {}
+    }
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/products/_bulk
+Content-Type: application/x-ndjson
+
+{ "update": { "_id":201 } }
+{ "doc": { "price": 129 } }
+{ "delete": { "_id":200 } }
+
