@@ -1,0 +1,36 @@
+###
+PUT http://{{$processEnv ELASTIC}}/reviews/_mapping
+Content-Type: application/json
+
+{
+    "properties": {
+        "comment":{
+            "type": "alias",
+            "path": "content"
+        }
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "content": "outstanding"
+        }
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "comment": "outstanding"
+        }
+    }
+}

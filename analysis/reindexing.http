@@ -1,0 +1,99 @@
+#
+###
+PUT http://{{$processEnv ELASTIC}}/reviews_v2/
+Content-Type: application/json
+
+{
+    "mappings": {
+      "properties": {
+        "author": {
+          "properties": {
+            "email": {
+              "type": "keyword"
+            },
+            "first_name": {
+              "type": "text"
+            },
+            "last_name": {
+              "type": "text"
+            }
+          }
+        },
+        "content": {
+          "type": "text"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "product_id": {
+          "type": "keyword"
+        },
+        "rating": {
+          "type": "float"
+        }
+      }
+    }
+}
+
+
+#
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html
+#
+###
+POST http://{{$processEnv ELASTIC}}/_reindex
+Content-Type: application/json
+
+{
+
+    "source":{
+        "index": "reviews"
+    },
+    "dest":{
+        "index": "reviews_v2"
+    }
+}
+
+#
+#
+#
+###
+GET http://{{$processEnv ELASTIC}}/reviews_v2/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all": {}
+    }
+}
+
+#
+#
+#
+###
+POST http://{{$processEnv ELASTIC}}/reviews_v2/_delete_by_query
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all": {}
+    }
+}
+
+#
+#
+#
+###
+POST http://{{$processEnv ELASTIC}}/_reindex
+Content-Type: application/json
+
+{
+    "source": {
+        "index": "reviews"
+    },
+    "dest": {
+        "index": "reviews_v2"
+    },
+    "script": {
+        "source": "if (ctx._source.product_id != null){ ctx._source.product_id = ctx._source.product_id.toString(); }"
+    }
+}

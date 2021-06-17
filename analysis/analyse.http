@@ -19,3 +19,15 @@ Content-Type: application/json
     "tokenizer": "standard",
     "filter": ["lowercase"]
 }
+
+#
+# array
+#
+###
+POST /_analyze
+Content-Type: application/json
+
+{
+    "text": ["Strings are simply", "merged together."],
+    "analyzer": "standard"
+}

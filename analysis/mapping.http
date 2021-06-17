@@ -1,0 +1,81 @@
+#
+# defining mapping for new index
+#
+###
+PUT http://{{$processEnv ELASTIC}}/reviews
+Content-Type: application/json
+
+{
+    "mappings":{
+        "properties" :{
+            "rating": { "type": "float"},
+            "content": { "type": "text"},
+            "product_id": { "type": "integer"},
+            "author": { "properties": {
+                "first_name": {"type":"text"},
+                "last_name":{"type":"text"},
+                "email": {"type":"keyword"}
+            } }
+        }
+    }
+}
+
+#
+# Adding Mapping
+#   date type
+#       - A date without time
+#       - A date with time
+#       - miliseconds from EPOCH (long) - internal representation 
+#       - ISO8601
+# https://en.wikipedia.org/wiki/ISO_8601
+###
+PUT http://{{$processEnv ELASTIC}}/reviews/_mapping
+Content-Type: application/json
+
+{
+    "properties": {
+        "created_at": {
+            "type": "date"
+        }
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_mapping
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_mapping/field/content
+
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_mapping/field/author.email
+
+
+###
+GET http://{{$processEnv ELASTIC}}/reviews/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all": {}
+    }
+}
+
+#
+# Indexing document
+#
+###
+POST http://{{$processEnv ELASTIC}}/reviews/_doc
+Content-Type: application/json
+
+{
+    "rating": 5.0,
+    "content": "Outstanding course! Bo really taught me a lot about Elasticsearch!",
+    "product_id": 123,
+    "author": { 
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "johndoe123@example.com"
+    }
+}
+

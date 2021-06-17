@@ -1,0 +1,29 @@
+PUT http://{{$processEnv ELASTIC}}/multi_field_test
+Content-Type: application/json
+
+{
+    "mappings": {
+        "properties": {
+            "description":{
+                "type":"text"
+            },
+            "ingredients":{
+                "type": "text",
+                "fields":{
+                    "keyword": {
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
+    }
+}
+
+###
+POST http://{{$processEnv ELASTIC}}/multi_field_test/_doc
+Content-Type: application/json
+
+{
+    "description": "To make this spaghetti carbonara, you first need to ...",
+    "ingredients": ["Spaghetti", "Guanciale", "Eggs"]
+}
