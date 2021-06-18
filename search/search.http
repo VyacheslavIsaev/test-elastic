@@ -1,0 +1,16 @@
+#
+# Searching with request URI
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search?q=*
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search?q=name:pasta
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search?q=tags:meat
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search?q=tags:meat AND name:tuna
+
+

@@ -1,0 +1,85 @@
+#
+# Review of a dynamic mapping 
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_mapping
+
+#
+# Match query. Search for any of present words
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match" : {
+            "title": "Recipes with pasta or spaghetti"
+        }
+    }
+}
+
+# 
+# 
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match" : {
+            "title": { 
+                "query":"Recipes with pasta or spaghetti",
+                "operator":"and"
+            }
+        }
+    }
+}
+
+#
+# Search for multiple terms
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match" : {
+            "title": { 
+                "query":"pasta spaghetti",
+                "operator":"and"
+            }
+        }
+    }
+}
+
+#
+# Search for any terms
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase" : {
+            "title": { 
+                "query":"spaghetti puttanesca"
+            }
+        }
+    }
+}
+
+
+#
+# Searching multipel fields
+#   - relevant score is used
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "multi_match" : {
+            "query": "pasta",
+            "fields": ["title", "description"]            
+        }
+    }
+}

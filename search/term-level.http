@@ -1,0 +1,223 @@
+#
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "is_active":"true"
+        }
+    }
+}
+
+#
+#  With extra parameters
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "is_active":{
+                "value": true
+            }
+        }
+    }
+}
+
+
+#
+# Multiple values
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "terms" : {
+            "tags.keyword":[
+                "Soup",
+                "Cake"
+            ]
+        }
+    }
+}
+
+#
+# Retrieving based on IDs
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "ids" : {
+            "values":[
+                1, 2, 3
+            ]
+        }
+    }
+}
+
+#
+# Matching document within a range of values
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "range" : {
+            "in_stock":{
+                "gte": 1,
+                "lte": 5
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "range" : {
+            "created":{
+                "gte": "2010/01/01",
+                "lte": "2010/12/31"
+            }
+        }
+    }
+}
+
+#
+# Date range with a specific format
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "range" : {
+            "created":{
+                "gte": "01-01-2010",
+                "lte": "31-12-2010",
+                "format": "dd-MM-yyyy"
+            }
+        }
+    }
+}
+
+#
+# Date math with anker point
+#   https://www.elastic.co/guide/en/elasticsearch/reference/current/common-options.html#date-math
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "range" : {
+            "created":{
+                "gte": "01-01-2010||-1y-1d",
+                "lte": "31-12-2010",
+                "format": "dd-MM-yyyy"
+            }
+        }
+    }
+}
+
+#
+# Using NOW 
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "range" : {
+            "created":{
+                "gte": "now-5y-1d",
+                "lte": "now-5y"
+            }
+        }
+    }
+}
+
+#
+# Nonull
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "exists" : {
+            "field": "tags"
+
+        }
+    }
+}
+
+#
+# Prefix search
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "prefix" : {
+            "tags.keyword": "Vege"
+
+        }
+    }
+}
+
+#
+#  Wildcard search
+#   - think about performance
+#   - especially expressions starts with * are killers
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "wildcard" : {
+            "tags.keyword": "Veg*ble"
+
+        }
+    }
+}
+
+#
+# Regexp search
+#   https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax
+#   Lucine regexp which are not full supprot of RegExps
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "regexp" : {
+            "tags.keyword": "Veg[a-z]*ble"
+        }
+    }
+}
+
+

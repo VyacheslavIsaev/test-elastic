@@ -27,3 +27,63 @@ Content-Type: application/json
     "description": "To make this spaghetti carbonara, you first need to ...",
     "ingredients": ["Spaghetti", "Guanciale", "Eggs"]
 }
+
+
+###
+GET http://{{$processEnv ELASTIC}}/multi_field_test/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all": {}
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/multi_field_test/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match": {
+            "ingredients": "Spaghetti"
+        }
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/multi_field_test/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match": {
+            "ingredients": "spaghetti"
+        }
+    }
+}
+
+
+###
+GET http://{{$processEnv ELASTIC}}/multi_field_test/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "term": {
+            "ingredients.keyword": "spaghetti"
+        }
+    }
+}
+
+###
+GET http://{{$processEnv ELASTIC}}/multi_field_test/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "term": {
+            "ingredients.keyword": "Spaghetti"
+        }
+    }
+}

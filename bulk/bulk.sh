@@ -1,3 +1,6 @@
 #!/bin/bash
 
-curl -XPOST -H "Content-Type: application/x-ndjson" http://$ELASTIC/products/_bulk --data-binary "@./products-bulk.json" 
+NAME=`basename "$1"`
+NAME="${NAME%.*}"
+
+curl -XPOST -H "Content-Type: application/x-ndjson" http://$ELASTIC/$NAME/_bulk --data-binary "@./$1"

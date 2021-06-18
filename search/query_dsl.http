@@ -1,0 +1,104 @@
+#
+# Searching with Query DSL
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "query_string" : {
+            "query": "name:pasta"
+        }
+    }
+}
+
+#
+# match_all - probably a good start
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all" : {
+            
+        }
+    }
+}
+
+#
+# Getting score information on search
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search?explain
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "name":"lobster"            
+        }
+    }
+}
+
+#
+# Get a detailed explanation of search scores
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_explain/19
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "name":"lobster"            
+        }
+    }
+}
+
+#
+# Term search LOWER case
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "name":"lobster"
+        }
+    }
+}
+
+#
+# Term search UPPER case
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "term" : {
+            "name":"Lobster"
+        }
+    }
+}
+
+#
+# Full text UPPER case
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{        
+        "match" : {
+            "name":"Lobster"
+        }
+    }
+}

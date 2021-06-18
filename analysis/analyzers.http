@@ -1,0 +1,140 @@
+#
+# Configuring analyzer on index creation time
+#
+###
+PUT http://{{$dotenv ELASTIC}}/analyzer_test
+Content-Type: application/json
+
+{
+    "settings":{
+        "analysis":{
+            "analyzer":{
+                "my_custom_analyzer":{
+                    "type": "custom",
+                    "char_filter": ["html_strip"],
+                    "tokenizer": "standard",
+                    "filter":[
+                        "lowercase",
+                        "stop",
+                        "asciifolding"
+                    ]
+                }
+            }
+        }
+    }
+}
+
+#
+# Fully custom analyzer
+#
+###
+PUT http://{{$dotenv ELASTIC}}/test_danish_analyzer
+Content-Type: application/json
+
+{
+    "settings":{
+        "analysis":{
+            "filter":{
+                "danish_stop": {
+                    "type": "stop",
+                    "stopwords": "_danish_"
+                }
+            },
+            "char_filter": {},
+            "tokenizer": {},
+            "analyzer":{
+                "my_custom_analyzer":{
+                    "type": "custom",
+                    "char_filter": ["html_strip"],
+                    "tokenizer": "standard",
+                    "filter":[
+                        "lowercase",
+                        "danish_stop",
+                        "asciifolding"
+                    ]
+                }
+            }
+        }
+    }
+}
+
+###
+POST /analyzer_test/_doc
+Content-Type: application/json
+
+{
+    "description": "Is that Peter's cute-looking dog?"
+}
+
+
+##
+# Changing analyzer on existing index
+##
+
+# Close index first
+###
+PUT http://{{$dotenv ELASTIC}}/analyzer_test/_close
+
+# Configure index
+###
+PUT http://{{$dotenv ELASTIC}}/analyzer_test/_settings
+Content-Type: application/json
+{
+    // settings 
+}
+
+# Open index afterwards
+###
+PUT http://{{$dotenv ELASTIC}}/analyzer_test/_open
+
+# Re-analyze documents in the index
+###
+POST analyzer_test/_update_by_query?conflicts=proceed
+
+#
+# Analyzis examples
+#
+###
+POST http://{{$dotenv ELASTIC}}/_analyze
+Content-Type: application/json
+
+{
+    "analyzer":"standard",
+    "text": "I&apos;m in a <em>good</em> mood&nbsp;-&nbsp;and I <strong>love</strong> ačaž!"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/_analyze
+Content-Type: application/json
+
+{
+    "char_filter": ["html_strip"],
+    "text": "I&apos;m in a <em>good</em> mood&nbsp;-&nbsp;and I <strong>love</strong> ačaž!"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/analyzer_test/_analyze
+Content-Type: application/json
+
+{
+    "analyzer":"my_custom_analyzer",
+    "text": "I&apos;m in a <em>good</em> mood&nbsp;-&nbsp;and I <strong>love</strong> ačaž!"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/_analyze
+Content-Type: application/json
+
+{
+    "analyzer":"standard",
+    "text": "Is that Peter's cute-looking dog?"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/analyzer_test/_analyze
+Content-Type: application/json
+
+{
+    "analyzer":"standard",
+    "text": "Is that Peter's cute-looking dog?"
+}
