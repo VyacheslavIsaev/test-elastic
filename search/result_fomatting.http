@@ -1,0 +1,17 @@
+
+GET http://{{$dotenv ELASTIC}}/recipe/_search?format=yaml
+Content-Type: application/json
+
+{
+    "query":{
+        "query_string" : {
+            "match": {
+                "title":"pasta"
+            }
+        }
+    }
+}
+
+
+###
+GET http://{{$dotenv ELASTIC}}/recipes/_mapping?format=yaml

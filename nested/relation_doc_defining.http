@@ -1,0 +1,142 @@
+#
+# https://github.com/codingexplained/complete-guide-to-elasticsearch/tree/master/Joining%20Queries
+#
+###
+DELETE http://{{$dotenv ELASTIC}}/department/
+
+
+###
+PUT http://{{$dotenv ELASTIC}}/department
+Content-Type: application/json
+
+{
+    "mappings": {
+            "properties": {
+                "join_field": {
+                    "type": "join",
+                    "relations": {
+                        "department": "employee"
+                    }
+                }
+            }
+    }
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/department/_doc/1
+Content-Type: application/json
+
+{
+    "name":"Development",
+    "join_field": "department"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/department/_doc/2
+Content-Type: application/json
+
+{
+    "name":"Marketing",
+    "join_field": {
+        "name": "department"
+    }
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all": {         
+        }
+    }
+}
+
+#
+# Defining dependedn documents 
+#   They shall be on the same shard with the perent document,
+#   there for routing shall be provided explicitly
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/3?routing=1
+Content-Type: application/json
+
+{
+    "name":"Alex Maksi",
+    "age" : 28,
+    "gender": "M",
+    "join_field": {
+        "name":  "employee",
+        "parent": 1
+    }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/4?routing=2
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "age": 44,
+  "gender": "M",
+  "join_field": {
+    "name": "employee",
+    "parent": 2
+  }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/5?routing=1
+Content-Type: application/json
+
+{
+  "name": "James Evans",
+  "age": 32,
+  "gender": "M",
+  "join_field": {
+    "name": "employee",
+    "parent": 1
+  }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/6?routing=1
+Content-Type: application/json
+
+{
+  "name": "Daniel Harris",
+  "age": 52,
+  "gender": "M",
+  "join_field": {
+    "name": "employee",
+    "parent": 1
+  }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/7?routing=2
+Content-Type: application/json
+
+{
+  "name": "Jane Park",
+  "age": 23,
+  "gender": "F",
+  "join_field": {
+    "name": "employee",
+    "parent": 2
+  }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/department/_doc/8?routing=1
+Content-Type: application/json
+
+{
+  "name": "Christina Parker",
+  "age": 29,
+  "gender": "F",
+  "join_field": {
+    "name": "employee",
+    "parent": 1
+  }
+}

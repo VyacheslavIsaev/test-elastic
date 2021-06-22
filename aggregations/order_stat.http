@@ -1,0 +1,88 @@
+#
+#
+GET http://{{$dotenv ELASTIC}}/order/_mapping?format=yaml
+
+#
+#  https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics.html
+#
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "total_sales": {
+            "sum": {
+                "field": "total_amount"
+            }
+        },
+        "avg_sale": {
+            "avg":{
+                "field": "total_amount"
+            }
+        },
+        "min_sale":{
+            "min":{
+                "field": "total_amount"
+            }
+        },
+        "max_sale":{
+            "max":{
+                "field": "total_amount"
+            }
+        }
+    }
+}
+
+
+#
+# Cardinality
+#
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "total_salesmen": {
+            "cardinality": {
+                "field": "salesman.id"
+            }
+        }
+    }
+}
+
+#
+# Number of values used in aggregation
+#
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "values_count": {
+            "value_count": {
+                "field": "total_amount"
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "amount_stats": {
+            "stats": {
+                "field": "total_amount"
+            }
+        }
+    }
+}

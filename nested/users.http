@@ -1,0 +1,81 @@
+###
+PUT http://{{$dotenv ELASTIC}}/users/_doc/1
+Content-Type: application/json
+
+{ "name": "John Roberts", "following": [2, 3] }
+
+###
+PUT http://{{$dotenv ELASTIC}}/users/_doc/2
+Content-Type: application/json
+
+{ "name": "Elizabet Ross", "following": [] }
+
+###
+PUT http://{{$dotenv ELASTIC}}/users/_doc/3
+Content-Type: application/json
+
+{ "name": "Jeremy Brooks", "following": [1, 2] }
+
+###
+PUT http://{{$dotenv ELASTIC}}/users/_doc/4
+Content-Type: application/json
+
+{ "name": "Diana Moore", "following": [3, 1] }
+
+###
+#  Stories
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/1
+Content-Type: application/json
+
+{ "user": "3", "content": "Wow look, a penguin!" }
+
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/2
+Content-Type: application/json
+
+{ "user": "1", "content": "Just another day at the office... #cofee" }
+
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/3
+Content-Type: application/json
+
+{ "user": "1", "content": "Making search great again! #elasticsearch #elk" }
+
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/4
+Content-Type: application/json
+
+{ "user": "4", "content": "Had a blast today! #rollercoaster #amusementpark" }
+
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/5
+Content-Type: application/json
+
+{ "user": "4", "content": "Yoy, I just got hired as an Elasticsearch consultant - so excited!" }
+
+###
+PUT http://{{$dotenv ELASTIC}}/stories/_doc/6
+Content-Type: application/json
+
+{ "user": "2", "content": "Chilling at the beach @ Greece #vacation #goodtimes" }
+
+#
+# Searching stories
+#
+###
+GET http://{{$dotenv ELASTIC}}/stories/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "terms":{
+            "user":{
+                "index": "users",
+                "type": "_doc",
+                "id": "1",
+                "path": "following"
+            }
+        }
+    }
+}

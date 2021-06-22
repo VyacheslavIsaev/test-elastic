@@ -1,0 +1,146 @@
+#
+# Querying first department
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "parent_id": {
+            "type": "employee",
+            "id" : 1
+        }
+    }
+}
+
+#
+# Querying second department
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "parent_id": {
+            "type": "employee",
+            "id" : 2
+        }
+    }
+}
+
+#
+# Querying by department ID
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "has_parent": {
+            "parent_type": "department",
+            "query" : {
+                "term":{
+                    "name.keyword" : "Development"
+                }
+            }
+        }
+    }
+}
+
+#
+# Applying parent score to child objects
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "has_parent": {
+            "parent_type": "department",
+            "score": true,
+            "query" : {
+                "term":{
+                    "name.keyword" : "Development"
+                }
+            }
+        }
+    }
+}
+
+
+#
+# Retreaving parent document based on child parameters
+#   Adding score from child objects to a final score
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "has_child": {
+            "type": "employee",
+            "score_mode": "sum",
+            "query" : {
+                "bool":{
+                    "must":[
+                        {
+                            "range":{
+                                "age" : {
+                                    "gte": 30
+                                }
+                            }
+                        }
+                    ],
+                    "should":[
+                        {
+                            "term":{
+                                "gender.keyword":"M"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+
+#
+# Retreaving parent document based on child parameters
+#   Adding score from child objects to a final score
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "has_child": {
+            "type": "employee",
+            "score_mode": "sum",
+            "min_children": 2,
+            "max_children": 5,
+            "query" : {
+                "bool":{
+                    "must":[
+                        {
+                            "range":{
+                                "age" : {
+                                    "gte": 30
+                                }
+                            }
+                        }
+                    ],
+                    "should":[
+                        {
+                            "term":{
+                                "gender.keyword":"M"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

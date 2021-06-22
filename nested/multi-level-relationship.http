@@ -1,0 +1,66 @@
+#
+#   Multi level relationship
+#
+###
+PUT http://{{$dotenv ELASTIC}}/company
+Content-Type: application/json
+
+{
+    "mappings": {
+        "properties": {
+            "join_field": {
+                "type": "join",
+                "relations": {
+                    "company": ["department", "supplier"],
+                    "department" : "employee"
+                }
+            }
+        }
+    }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/company/_doc/1
+Content-Type: application/json
+
+{
+    "name": "My Company Inc.",
+    "join_field": "company"
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/company/_doc/2?routing=1
+Content-Type: application/json
+
+{
+    "name": "Development",
+    "join_field": {
+        "name" : "department",
+        "parent": "1"
+    }
+}
+
+###
+PUT http://{{$dotenv ELASTIC}}/company/_doc/3?routing=1
+Content-Type: application/json
+
+{
+    "name": "Calvin Clein",
+    "join_field": {
+        "name" : "employee",
+        "parent": 2
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/company/_mapping
+
+###
+GET http://{{$dotenv ELASTIC}}/company/_search?format=yaml
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all":{}
+    }
+}

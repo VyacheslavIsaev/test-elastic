@@ -1,0 +1,90 @@
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "bool": {
+            "must":[
+                {
+                    "match": {
+                        "employees.position": "intern"
+                    }
+                },
+                {
+                    "term": {
+                        "employees.gender.keyword":{
+                            "value": "F"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
+
+
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "nested":{
+            "path": "employees",
+            "query":{
+                "bool": {
+                    "must":[
+                        {
+                            "match": {
+                                "employees.position": "intern"
+                            }
+                        },
+                        {
+                            "term": {
+                                "employees.gender.keyword":{
+                                    "value": "F"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+
+#
+# Nested inner hits
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search
+Content-Type: application/json
+
+{
+    "query": {
+        "nested":{
+            "path": "employees",
+            "inner_hits":{                
+            },
+            "query":{
+                "bool": {
+                    "must":[
+                        {
+                            "match": {
+                                "employees.position": "intern"
+                            }
+                        },
+                        {
+                            "term": {
+                                "employees.gender.keyword":{
+                                    "value": "F"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
