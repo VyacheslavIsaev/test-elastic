@@ -1,0 +1,107 @@
+###
+PUT http://{{$dotenv ELASTIC}}/proximity/_bulk
+Content-Type:  application/x-ndjson
+
+{"index":{"_id":1}}
+{ "title": "Spicy Sauce" }
+{"index":{"_id":2}}
+{ "title": "Spicy Tomato Sauce" }
+{"index":{"_id":3}}
+{ "title": "Spicy Tomato and Garlic Sauce" }
+{"index":{"_id":4}}
+{ "title": "Tomato Sauce (spicy)" }
+{"index":{"_id":5}}
+{ "title": "Spicy and very delicious Tomato Sauce" }
+
+###
+GET http://{{$dotenv ELASTIC}}/proximity/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase":{
+            "title":{
+                "query": "spicy sauce"
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/proximity/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase":{
+            "title":{
+                "query": "spicy sauce",
+                "slop": "1"
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/proximity/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase":{
+            "title":{
+                "query": "spicy sauce",
+                "slop": "2"
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/proximity/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match_phrase":{
+            "title":{
+                "query": "spicy sauce",
+                "slop": "3"
+            }
+        }
+    }
+}
+
+#
+# Extracting all documents wiht terms and boosting documents with terms closest
+#
+###
+GET http://{{$dotenv ELASTIC}}/proximity/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "bool":{
+            "must":[
+                {
+                    "match":{
+                        "title":{
+                            "query": "spicy sauce"
+                        }
+                    }
+                }
+            ],
+            "should":[
+                {
+                    "match_phrase":{
+                        "title":{
+                            "query": "spicy sauce",
+                            "slop" : 2
+                        }
+                    }
+                }
+            ]
+            
+        }
+    }
+}

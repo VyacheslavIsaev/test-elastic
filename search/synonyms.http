@@ -1,0 +1,135 @@
+DELETE http://{{$dotenv ELASTIC}}/synonym
+
+###
+PUT http://{{$dotenv ELASTIC}}/synonym
+Content-Type: application/json
+
+{
+    "settings":{
+        "analysis": {
+            "filter": {
+                "synonym_test": {
+                    "type": "synonym",
+                    "synonyms": [
+                        "awful => terrible",
+                        "awesome => great, super",
+                        "elasticsearch, logstash, kibana => elk",
+                        "weird, strange"
+                    ]
+                }
+            },        
+            "analyzer":{
+                "my_analyzer": {
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "synonym_test"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings":{
+        "properties":{
+            "description":{
+                "type": "text",
+                "analyzer": "my_analyzer"
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/synonym/_mapping?format=yaml
+
+###
+GET http://{{$dotenv ELASTIC}}/synonym/_settings?format=yaml
+
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_analyze?format=yaml
+Content-Type: application/json
+
+{
+    "analyzer": "my_analyzer",
+    "text": "awesome"
+}
+
+#
+# Lower case filter is run before synonym filter
+#
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_analyze?format=yaml
+Content-Type: application/json
+
+{
+    "analyzer": "my_analyzer",
+    "text": "Elasticsearch"
+}
+
+#
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_analyze?format=yaml
+Content-Type: application/json
+
+{
+    "analyzer": "my_analyzer",
+    "text": "Elasticsearch"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_analyze?format=yaml
+Content-Type: application/json
+
+{
+    "analyzer": "my_analyzer",
+    "text": "weird"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_analyze?format=yaml
+Content-Type: application/json
+
+{
+    "analyzer": "my_analyzer",
+    "text": "Elasticsearch is awesome but might look weird some times"
+}
+
+###
+POST http://{{$dotenv ELASTIC}}/synonym/_doc
+Content-Type: application/json
+
+{
+    "description": "Elasticsearch is awesome but might look weird some times"
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/synonym/_search?format=yaml
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "description": "great"
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/synonym/_search?format=yaml
+Content-Type: application/json
+
+{
+    "_source":"false",
+    "query":{
+        "match":{
+            "description": "awesome"
+        }
+    },
+    "highlight":{
+        "pre_tags": ["<strong>"],
+        "post_tags":["</strong>"],
+        "fields":{
+            "description":{}
+        }
+    }
+}

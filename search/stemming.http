@@ -1,0 +1,72 @@
+###
+DELETE http://{{$dotenv ELASTIC}}/test_stemming
+
+###
+PUT http://{{$dotenv ELASTIC}}/test_stemming
+Content-Type: application/json
+
+{
+    "settings":{
+        "analysis": {
+            "filter": {
+                "synonym_test": {
+                    "type": "synonym",
+                    "synonyms": [
+                        "firm => company",
+                        "love, enjoy, joy, happines"
+                    ]
+                },
+                "stemmer_test" : {
+                    "type": "stemmer",
+                    "name": "english"
+                }
+            },            
+            "analyzer":{
+                "my_analyzer": {
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "synonym_test",
+                        "stemmer_test"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings":{
+        "properties":{
+            "description":{
+                "type": "text",
+                "analyzer": "my_analyzer"
+            }
+        }
+    }
+}
+
+
+###
+POST http://{{$dotenv ELASTIC}}/test_stemming/_doc/1
+Content-Type: application/json
+
+{
+    "description": "I love working for my firm."
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/test_stemming/_search?format=yaml
+Content-Type: application/json
+
+{
+    "query": {
+        "match": {
+            "description": "enjoy work"
+        }
+    },
+    "highlight":{
+        "pre_tags": ["<strong>"],
+        "post_tags":["</strong>"],
+        "fields":{
+            "description":{}
+        }
+    }
+}

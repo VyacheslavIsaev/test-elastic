@@ -1,0 +1,135 @@
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "name": {
+                "query": "lobster"
+            }
+        }
+    }
+}
+
+#
+# Allowing some characters to be replaced 
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "name": {
+                "query": "l0bster",
+                "fuzziness": "auto"
+            }
+        }
+    }
+}
+
+#
+# Lobster -> Oyster
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "name": {
+                "query": "lobster",
+                "fuzziness": "auto"
+            }
+        }
+    }
+}
+
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "name": {
+                "query": "l0bster love",
+                "operator": "and",
+                "fuzziness": "1"
+            }
+        }
+    }
+}
+
+#
+# Disabling transposition
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "match":{
+            "name": {
+                "query": "lvie",
+                "fuzziness": "auto",
+                "fuzzy_transposition": "false"
+            }
+        }
+    }
+}
+
+#
+# Pure fuzzy query
+#   fuzzy - term level query
+#
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "fuzzy":{
+            "name": {
+                "value": "LOBSTER",
+                "fuzziness": "auto"                
+            }
+        }
+    }
+}
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "fuzzy":{
+            "name": {
+                "value": "LObster",
+                "fuzziness": "auto"                
+            }
+        }
+    }
+}
+
+
+###
+GET http://{{$dotenv ELASTIC}}/products/_search
+Content-Type: application/json
+
+{
+    "query":{
+        "fuzzy":{
+            "name": {
+                "value": "lobster",
+                "fuzziness": "auto"                
+            }
+        }
+    }
+}

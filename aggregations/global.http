@@ -1,0 +1,35 @@
+#
+# Global
+#
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+  "size": 0,
+  "query":{
+      "range":{
+          "total_amount": {
+              "gte": 100
+          }
+      }
+  },
+  "aggs": {
+      "stats_above_limit":{
+          "stats":{
+              "field":"total_amount"
+          }
+      },
+      "all_orders":{
+          "global":{        
+          },
+          "aggs":{
+              "stats_amount":{
+                  "stats":{
+                      "field":"total_amount"
+                  }
+              }
+          }
+      }
+  }
+}

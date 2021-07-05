@@ -1,0 +1,40 @@
+###
+POST http://{{$dotenv ELASTIC}}/order/_bulk/
+Content-Type: application/x-ndjson
+
+{ "index":{"_id":1001} }
+{ "total_amount":100 }
+{ "index":{"_id":1002} }
+{ "total_amount":200, "status":null }
+
+
+###
+GET http://{{$dotenv ELASTIC}}/order/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size":0,
+    "aggs": {
+        "orders_without_status": {
+            "missing": {
+                "field": "status.keyword"
+            },
+            "aggs":{
+                "lost_value":{
+                    "sum":{
+                        "field":"total_amount"
+                    }
+                }
+            }
+        }
+    }
+}
+
+#
+# Cleaning
+#
+###
+DELETE http://{{$dotenv ELASTIC}}/order/_doc/1001
+
+###
+DELETE http://{{$dotenv ELASTIC}}/order/_doc/1002

@@ -1,0 +1,53 @@
+#
+# Wrong assumption
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "minimum_age": {
+            "min": {
+                "field": "employees.age"
+            }
+        }
+    }
+}
+
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search?format=yaml
+Content-Type: application/json
+
+{
+    "query":{
+        "match_all":{
+
+        }
+    }
+}
+
+#
+###
+GET http://{{$dotenv ELASTIC}}/department/_search?format=yaml
+Content-Type: application/json
+
+{
+    "size": 0,
+    "aggs": {
+        "employees": {
+            "nested": {
+                "path": "employees"
+            },
+            "aggs":{
+                "minimum_age": {
+                    "min": {
+                        "field": "employees.age"
+                    }
+                }
+            }
+        }
+    }
+}
